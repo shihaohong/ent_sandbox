@@ -15,8 +15,29 @@ type Group struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Model holds the value of the "model" field.
-	Model string `json:"model,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the GroupQuery when eager-loading is set.
+	Edges GroupEdges `json:"edges"`
+}
+
+// GroupEdges holds the relations/edges for other nodes in the graph.
+type GroupEdges struct {
+	// Users holds the value of the users edge.
+	Users []*User `json:"users,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// UsersOrErr returns the Users value or an error if the edge
+// was not loaded in eager-loading.
+func (e GroupEdges) UsersOrErr() ([]*User, error) {
+	if e.loadedTypes[0] {
+		return e.Users, nil
+	}
+	return nil, &NotLoadedError{edge: "users"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -26,7 +47,7 @@ func (*Group) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case group.FieldID:
 			values[i] = new(sql.NullInt64)
-		case group.FieldModel:
+		case group.FieldName:
 			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Group", columns[i])
@@ -49,15 +70,20 @@ func (gr *Group) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			gr.ID = int(value.Int64)
-		case group.FieldModel:
+		case group.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field model", values[i])
+				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				gr.Model = value.String
+				gr.Name = value.String
 			}
 		}
 	}
 	return nil
+}
+
+// QueryUsers queries the "users" edge of the Group entity.
+func (gr *Group) QueryUsers() *UserQuery {
+	return (&GroupClient{config: gr.config}).QueryUsers(gr)
 }
 
 // Update returns a builder for updating this Group.
@@ -83,8 +109,8 @@ func (gr *Group) String() string {
 	var builder strings.Builder
 	builder.WriteString("Group(")
 	builder.WriteString(fmt.Sprintf("id=%v", gr.ID))
-	builder.WriteString(", model=")
-	builder.WriteString(gr.Model)
+	builder.WriteString(", name=")
+	builder.WriteString(gr.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }

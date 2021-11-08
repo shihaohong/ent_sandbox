@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"ent_sandbox/ent/group"
+	"ent_sandbox/ent/user"
 	"errors"
 	"fmt"
 
@@ -19,10 +20,25 @@ type GroupCreate struct {
 	hooks    []Hook
 }
 
-// SetModel sets the "model" field.
-func (gc *GroupCreate) SetModel(s string) *GroupCreate {
-	gc.mutation.SetModel(s)
+// SetName sets the "name" field.
+func (gc *GroupCreate) SetName(s string) *GroupCreate {
+	gc.mutation.SetName(s)
 	return gc
+}
+
+// AddUserIDs adds the "users" edge to the User entity by IDs.
+func (gc *GroupCreate) AddUserIDs(ids ...int) *GroupCreate {
+	gc.mutation.AddUserIDs(ids...)
+	return gc
+}
+
+// AddUsers adds the "users" edges to the User entity.
+func (gc *GroupCreate) AddUsers(u ...*User) *GroupCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return gc.AddUserIDs(ids...)
 }
 
 // Mutation returns the GroupMutation object of the builder.
@@ -95,12 +111,12 @@ func (gc *GroupCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (gc *GroupCreate) check() error {
-	if _, ok := gc.mutation.Model(); !ok {
-		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "model"`)}
+	if _, ok := gc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
-	if v, ok := gc.mutation.Model(); ok {
-		if err := group.ModelValidator(v); err != nil {
-			return &ValidationError{Name: "model", err: fmt.Errorf(`ent: validator failed for field "model": %w`, err)}
+	if v, ok := gc.mutation.Name(); ok {
+		if err := group.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
 		}
 	}
 	return nil
@@ -130,13 +146,32 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
-	if value, ok := gc.mutation.Model(); ok {
+	if value, ok := gc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: group.FieldModel,
+			Column: group.FieldName,
 		})
-		_node.Model = value
+		_node.Name = value
+	}
+	if nodes := gc.mutation.UsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   group.UsersTable,
+			Columns: group.UsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -6,6 +6,7 @@ import (
 	"ent_sandbox/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -91,29 +92,29 @@ func IDLTE(id int) predicate.Group {
 	})
 }
 
-// Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
-func Model(v string) predicate.Group {
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
+		s.Where(sql.EQ(s.C(FieldName), v))
 	})
 }
 
-// ModelEQ applies the EQ predicate on the "model" field.
-func ModelEQ(v string) predicate.Group {
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModel), v))
+		s.Where(sql.EQ(s.C(FieldName), v))
 	})
 }
 
-// ModelNEQ applies the NEQ predicate on the "model" field.
-func ModelNEQ(v string) predicate.Group {
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModel), v))
+		s.Where(sql.NEQ(s.C(FieldName), v))
 	})
 }
 
-// ModelIn applies the In predicate on the "model" field.
-func ModelIn(vs ...string) predicate.Group {
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.Group {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -125,12 +126,12 @@ func ModelIn(vs ...string) predicate.Group {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldModel), v...))
+		s.Where(sql.In(s.C(FieldName), v...))
 	})
 }
 
-// ModelNotIn applies the NotIn predicate on the "model" field.
-func ModelNotIn(vs ...string) predicate.Group {
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.Group {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -142,70 +143,98 @@ func ModelNotIn(vs ...string) predicate.Group {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldModel), v...))
+		s.Where(sql.NotIn(s.C(FieldName), v...))
 	})
 }
 
-// ModelGT applies the GT predicate on the "model" field.
-func ModelGT(v string) predicate.Group {
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldModel), v))
+		s.Where(sql.GT(s.C(FieldName), v))
 	})
 }
 
-// ModelGTE applies the GTE predicate on the "model" field.
-func ModelGTE(v string) predicate.Group {
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldModel), v))
+		s.Where(sql.GTE(s.C(FieldName), v))
 	})
 }
 
-// ModelLT applies the LT predicate on the "model" field.
-func ModelLT(v string) predicate.Group {
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldModel), v))
+		s.Where(sql.LT(s.C(FieldName), v))
 	})
 }
 
-// ModelLTE applies the LTE predicate on the "model" field.
-func ModelLTE(v string) predicate.Group {
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldModel), v))
+		s.Where(sql.LTE(s.C(FieldName), v))
 	})
 }
 
-// ModelContains applies the Contains predicate on the "model" field.
-func ModelContains(v string) predicate.Group {
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldModel), v))
+		s.Where(sql.Contains(s.C(FieldName), v))
 	})
 }
 
-// ModelHasPrefix applies the HasPrefix predicate on the "model" field.
-func ModelHasPrefix(v string) predicate.Group {
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldModel), v))
+		s.Where(sql.HasPrefix(s.C(FieldName), v))
 	})
 }
 
-// ModelHasSuffix applies the HasSuffix predicate on the "model" field.
-func ModelHasSuffix(v string) predicate.Group {
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldModel), v))
+		s.Where(sql.HasSuffix(s.C(FieldName), v))
 	})
 }
 
-// ModelEqualFold applies the EqualFold predicate on the "model" field.
-func ModelEqualFold(v string) predicate.Group {
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldModel), v))
+		s.Where(sql.EqualFold(s.C(FieldName), v))
 	})
 }
 
-// ModelContainsFold applies the ContainsFold predicate on the "model" field.
-func ModelContainsFold(v string) predicate.Group {
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldModel), v))
+		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// HasUsers applies the HasEdge predicate on the "users" edge.
+func HasUsers() predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(UsersTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, UsersTable, UsersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUsersWith applies the HasEdge predicate on the "users" edge with a given conditions (other predicates).
+func HasUsersWith(preds ...predicate.User) predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(UsersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, UsersTable, UsersPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 
